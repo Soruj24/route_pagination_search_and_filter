@@ -55,18 +55,25 @@ const Product = () => {
 
   const visiblePageNumbers = getVisiblePageNumbers();
 
-  //! Search Handling Function only first page search work
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setCurrentPage(1); // reset to the first page when searching from the first page
   };
 
-  const filteredProducts = products.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase())
-  );
+  //! Search Handling Function only first page search work
+
+  // const filteredProducts = products.filter((item) =>
+  //   item.title.toLowerCase().includes(search.toLowerCase())
+  // );
+
 
 
   let url = `https://dummyjson.com/products?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}`
 
+  if (search !== '') {
+    url = `https://dummyjson.com/products/search?q=${search}&limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}`
+
+  }
 
 
   useEffect(() => {
@@ -86,7 +93,7 @@ const Product = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [currentPage]);
+  }, [currentPage, search]);
 
   if (loading) {
     return (
@@ -123,8 +130,8 @@ const Product = () => {
           </div>
         </div>
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
+          {products.length > 0 ? (
+            products.map((product) => (
               <div
                 key={product.id}
                 className="bg-white p-4 shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200"
