@@ -5,8 +5,9 @@ const Product = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
-  // Pagination
+  //! Pagination
   const itemsPerPage = 12;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,10 +55,22 @@ const Product = () => {
 
   const visiblePageNumbers = getVisiblePageNumbers();
 
+  //! Search Handling Function only first page search work
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const filteredProducts = products.filter((item) =>
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+
+  let url = `https://dummyjson.com/products?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}`
+
+
+
   useEffect(() => {
-    fetch(
-      `https://dummyjson.com/products?limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}`
-    )
+    fetch(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch products");
@@ -95,11 +108,23 @@ const Product = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto py-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">All Products</h1>
-
+        <div className="flex justify-between my-3">
+          <div>
+            <input
+              className="p-2 rounded-md"
+              type="text"
+              placeholder="Search product..."
+              value={search}
+              onChange={handleSearch}
+            />
+          </div>
+          <div>
+            <h1>Filter Product</h1>
+          </div>
+        </div>
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products &&
-            products.length > 0 &&
-            products.map((product) => (
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
               <div
                 key={product.id}
                 className="bg-white p-4 shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200"
@@ -122,7 +147,10 @@ const Product = () => {
                   </Link>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <p className="text-gray-600 text-center">No products found</p>
+          )}
         </section>
 
         <div className="my-3 text-center">
