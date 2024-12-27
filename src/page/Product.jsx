@@ -6,8 +6,9 @@ const Product = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [sortCriteria, setSortCriteria] = useState("");
 
-  //! Pagination
+  //! Pagination Handling 
   const itemsPerPage = 12;
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,12 +56,13 @@ const Product = () => {
 
   const visiblePageNumbers = getVisiblePageNumbers();
 
+  //! Search Handling Function only first page search work
+
   const handleSearch = (e) => {
     setSearch(e.target.value);
     setCurrentPage(1); // reset to the first page when searching from the first page
   };
 
-  //! Search Handling Function only first page search work
 
   // const filteredProducts = products.filter((item) =>
   //   item.title.toLowerCase().includes(search.toLowerCase())
@@ -72,6 +74,23 @@ const Product = () => {
 
   if (search !== '') {
     url = `https://dummyjson.com/products/search?q=${search}&limit=${itemsPerPage}&skip=${(currentPage - 1) * itemsPerPage}`
+
+  }
+
+  if (sortCriteria) {
+
+    const spiltSortCriteria = sortCriteria.split('-');
+    console.log(spiltSortCriteria)
+
+    url += `&sortBy=${spiltSortCriteria[0]}&order=${spiltSortCriteria[1]}`
+  }
+
+
+  //! sort start here new 
+
+  const handelSortChange = (e) => {
+    setSortCriteria(e.target.value)
+
 
   }
 
@@ -93,7 +112,7 @@ const Product = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [currentPage, search]);
+  }, [currentPage, search, sortCriteria]);
 
   if (loading) {
     return (
@@ -127,6 +146,17 @@ const Product = () => {
           </div>
           <div>
             <h1>Filter Product</h1>
+            <select className=" " name="" id="" value={sortCriteria} onChange={handelSortChange}>
+              <option value=''>Sort by Value</option>
+              <option value='title-asc'>Title : A to Z</option>
+              <option value='title-desc'>Title : Z to A</option>
+              <option value='price-asc'>Price : Low to High</option>
+              <option value='price-desc'>Price : High to Law</option>
+              <option value='rating-asc'>Rating : Low to High</option>
+              <option value='rating-desc'>Rating : High to Law</option>
+
+
+            </select>
           </div>
         </div>
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -144,6 +174,7 @@ const Product = () => {
                 />
                 <p className="text-gray-600 text-sm capitalize">{product.category}</p>
                 <p className="text-gray-800 font-semibold mt-2">Price: $ {product.price}</p>
+                <p className="text-gray-800 font-semibold mt-2">Rating:  {product.rating}</p>
                 <div className="mt-4 text-center">
                   <Link
                     to={`/product/${product.id}`}
