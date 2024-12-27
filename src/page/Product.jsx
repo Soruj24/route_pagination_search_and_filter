@@ -112,7 +112,7 @@ const Product = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [currentPage, search, sortCriteria]);
+  }, [currentPage, search, sortCriteria, url]);
 
   if (loading) {
     return (
@@ -145,6 +145,7 @@ const Product = () => {
             />
           </div>
           <div>
+
             <h1>Filter Product</h1>
             <select className=" " name="" id="" value={sortCriteria} onChange={handelSortChange}>
               <option value=''>Sort by Value</option>
